@@ -22,6 +22,7 @@ builder.Services.AddIdentityApiEndpoints<ApplicationUser>()
     .AddRoles<Microsoft.AspNetCore.Identity.IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
+// 1. Tell ASP.NET Core to trust Render's load balancer
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
     options.ForwardedHeaders = ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedFor;
@@ -29,7 +30,20 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
     options.KnownProxies.Clear();
 });
 
-builder.Services.ConfigureOptions<ConfigureIdentityCookieOptions>();
+// 2. Global Cookie Policy to force SameSite=None and Secure
+builder.Services.Configure<CookiePolicyOptions>(options =>
+{
+    options.MinimumSameSitePolicy = SameSiteMode.None;
+    options.HttpOnly = Microsoft.AspNetCore.CookiePolicy.HttpOnlyPolicy.Always;
+    options.Secure = CookieSecurePolicy.Always;
+});
+
+// 3. Override Identity Application Scheme explicitly just in case
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Cookie.SameSite = SameSiteMode.None;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+});
 
 builder.Services.AddControllers();
 builder.Services.AddTransient<Microsoft.AspNetCore.Identity.IEmailSender<backend.Models.ApplicationUser>, backend.Services.EmailSender>();
@@ -49,6 +63,7 @@ builder.Services.AddCors(options =>
 var app = builder.Build();
 
 app.UseForwardedHeaders();
+app.UseCookiePolicy();
 
 using (var scope = app.Services.CreateScope())
 {
@@ -93,15 +108,3 @@ app.MapControllers();
 app.MapIdentityApi<ApplicationUser>();
 
 app.Run();
-
-public class ConfigureIdentityCookieOptions : Microsoft.Extensions.Options.IPostConfigureOptions<CookieAuthenticationOptions>
-{
-    public void PostConfigure(string? name, CookieAuthenticationOptions options)
-    {
-        if (name == IdentityConstants.ApplicationScheme)
-        {
-            options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.None;
-            options.Cookie.SecurePolicy = Microsoft.AspNetCore.Http.CookieSecurePolicy.Always;
-        }
-    }
-}

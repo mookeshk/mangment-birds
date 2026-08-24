@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,16 +31,11 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
     options.KnownProxies.Clear();
 });
 
-// ABSOLUTE FORCE: OnAppendCookie hook to mutate ALL cookies
-builder.Services.Configure<CookiePolicyOptions>(options =>
+// THIS IS THE OFFICIAL .NET 8 WAY TO OVERRIDE IDENTITY COOKIES
+builder.Services.PostConfigure<CookieAuthenticationOptions>(IdentityConstants.ApplicationScheme, options =>
 {
-    options.MinimumSameSitePolicy = SameSiteMode.None;
-    options.Secure = CookieSecurePolicy.Always;
-    options.OnAppendCookie = cookieContext =>
-    {
-        cookieContext.CookieOptions.SameSite = SameSiteMode.None;
-        cookieContext.CookieOptions.Secure = true;
-    };
+    options.Cookie.SameSite = SameSiteMode.None;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 });
 
 builder.Services.AddControllers();
@@ -59,7 +56,6 @@ builder.Services.AddCors(options =>
 var app = builder.Build();
 
 app.UseForwardedHeaders();
-app.UseCookiePolicy();
 
 using (var scope = app.Services.CreateScope())
 {

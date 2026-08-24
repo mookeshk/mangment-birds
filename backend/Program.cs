@@ -4,6 +4,8 @@ using backend.Models;
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Builder;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,11 +20,11 @@ builder.Services.AddIdentityApiEndpoints<ApplicationUser>()
     .AddRoles<Microsoft.AspNetCore.Identity.IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
-// MUST come after AddIdentityApiEndpoints
-builder.Services.ConfigureApplicationCookie(options =>
+// Bulletproof way to force SameSite=None and Secure on ALL cookies
+builder.Services.Configure<CookiePolicyOptions>(options =>
 {
-    options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.None;
-    options.Cookie.SecurePolicy = Microsoft.AspNetCore.Http.CookieSecurePolicy.Always;
+    options.MinimumSameSitePolicy = SameSiteMode.None;
+    options.Secure = CookieSecurePolicy.Always;
 });
 
 builder.Services.AddControllers();
@@ -78,6 +80,10 @@ if (!Directory.Exists(wwwrootPath))
 }
 
 app.UseStaticFiles();
+
+// Apply Cookie Policy before CORS/Auth
+app.UseCookiePolicy();
+
 app.UseCors();
 
 app.UseAuthentication();

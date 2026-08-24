@@ -6,7 +6,6 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,9 +19,6 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddIdentityApiEndpoints<ApplicationUser>()
     .AddRoles<Microsoft.AspNetCore.Identity.IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
-
-// Correct way to override Identity Cookie Options
-builder.Services.ConfigureOptions<ConfigureIdentityCookieOptions>();
 
 builder.Services.AddControllers();
 builder.Services.AddTransient<Microsoft.AspNetCore.Identity.IEmailSender<backend.Models.ApplicationUser>, backend.Services.EmailSender>();
@@ -40,6 +36,43 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+// FORCE SAMESITE=NONE AND SECURE ON ALL COOKIES USING MIDDLEWARE
+app.Use(async (context, next) =>
+{
+    context.Response.OnStarting(() =>
+    {
+        var cookies = context.Response.Headers.SetCookie;
+        if (cookies.Count > 0)
+        {
+            var newCookies = new Microsoft.Extensions.Primitives.StringValues(
+                cookies.Select(cookie => 
+                {
+                    if (cookie != null)
+                    {
+                        var c = cookie.Replace(""samesite=lax"", """", StringComparison.OrdinalIgnoreCase)
+                                      .Replace(""samesite=strict"", """", StringComparison.OrdinalIgnoreCase);
+                        
+                        if (!c.Contains(""SameSite=None"", StringComparison.OrdinalIgnoreCase))
+                        {
+                            c += ""; SameSite=None"";
+                        }
+                        if (!c.Contains(""Secure"", StringComparison.OrdinalIgnoreCase))
+                        {
+                            c += ""; Secure"";
+                        }
+                        return c;
+                    }
+                    return cookie;
+                }).ToArray()
+            );
+            context.Response.Headers.SetCookie = newCookies;
+        }
+        return Task.CompletedTask;
+    });
+    
+    await next();
+});
 
 using (var scope = app.Services.CreateScope())
 {
@@ -78,23 +111,9 @@ if (!Directory.Exists(wwwrootPath))
 
 app.UseStaticFiles();
 app.UseCors();
-
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.MapIdentityApi<ApplicationUser>();
 
 app.Run();
-
-// We must override the specific named options for Identity
-public class ConfigureIdentityCookieOptions : Microsoft.Extensions.Options.IPostConfigureOptions<CookieAuthenticationOptions>
-{
-    public void PostConfigure(string? name, CookieAuthenticationOptions options)
-    {
-        if (name == IdentityConstants.ApplicationScheme)
-        {
-            options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.None;
-            options.Cookie.SecurePolicy = Microsoft.AspNetCore.Http.CookieSecurePolicy.Always;
-        }
-    }
-}

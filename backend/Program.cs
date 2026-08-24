@@ -72,12 +72,15 @@ using (var scope = app.Services.CreateScope())
     
     var adminEmail = "eng.mo.keshk@gmail.com";
     var adminUser = userManager.FindByEmailAsync(adminEmail).GetAwaiter().GetResult();
-    if (adminUser != null)
+    if (adminUser == null)
     {
-        if (!userManager.IsInRoleAsync(adminUser, "Admin").GetAwaiter().GetResult())
-        {
-            userManager.AddToRoleAsync(adminUser, "Admin").GetAwaiter().GetResult();
-        }
+        adminUser = new ApplicationUser { UserName = adminEmail, Email = adminEmail, EmailConfirmed = true };
+        userManager.CreateAsync(adminUser, "P@ssw0rd").GetAwaiter().GetResult();
+    }
+    
+    if (!userManager.IsInRoleAsync(adminUser, "Admin").GetAwaiter().GetResult())
+    {
+        userManager.AddToRoleAsync(adminUser, "Admin").GetAwaiter().GetResult();
     }
 }
 

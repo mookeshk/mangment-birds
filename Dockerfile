@@ -13,7 +13,10 @@ FROM mcr.microsoft.com/dotnet/aspnet:9.0
 WORKDIR /App
 COPY --from=build-env /App/out .
 
-# Expose port 8080 (Render default)
+# Switch to root to ensure we can write to the SQLite database
+USER root
+
+# Expose port
 EXPOSE 8080
 ENV ASPNETCORE_URLS=http://+:8080
 

@@ -18,7 +18,7 @@ builder.Services.AddIdentityApiEndpoints<ApplicationUser>()
     .AddRoles<Microsoft.AspNetCore.Identity.IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
-// Fix Cross-Origin Cookies for Vercel/Render
+// MUST come after AddIdentityApiEndpoints
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.None;

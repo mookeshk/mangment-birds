@@ -9,14 +9,13 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.DependencyInjection;
-using System.Linq;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var port = Environment.GetEnvironmentVariable(""PORT"") ?? ""8080"";
-builder.WebHost.UseUrls($""http://*:{port}"");
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+builder.WebHost.UseUrls($"http://*:{port}");
 
-var connectionString = builder.Configuration.GetConnectionString(""DefaultConnection"");
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(connectionString));
 
@@ -62,6 +61,35 @@ using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     dbContext.Database.Migrate();
+
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<Microsoft.AspNetCore.Identity.IdentityRole>>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+    
+    if (!roleManager.RoleExistsAsync("Admin").GetAwaiter().GetResult())
+    {
+        roleManager.CreateAsync(new Microsoft.AspNetCore.Identity.IdentityRole("Admin")).GetAwaiter().GetResult();
+    }
+    
+    var adminEmail = "eng.mo.keshk@gmail.com";
+    var adminUser = userManager.FindByEmailAsync(adminEmail).GetAwaiter().GetResult();
+    if (adminUser != null)
+    {
+        if (!userManager.IsInRoleAsync(adminUser, "Admin").GetAwaiter().GetResult())
+        {
+            userManager.AddToRoleAsync(adminUser, "Admin").GetAwaiter().GetResult();
+        }
+    }
+}
+
+if (app.Environment.IsDevelopment())
+{
+    app.MapOpenApi();
+}
+
+var wwwrootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+if (!Directory.Exists(wwwrootPath))
+{
+    Directory.CreateDirectory(wwwrootPath);
 }
 
 app.UseStaticFiles();
@@ -70,13 +98,5 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.MapIdentityApi<ApplicationUser>();
-
-app.MapGet(""/debug-headers"", (HttpContext context) =>
-{
-    var dict = context.Request.Headers.ToDictionary(k => k.Key, v => v.Value.ToString());
-    dict[""IsHttps""] = context.Request.IsHttps.ToString();
-    dict[""Scheme""] = context.Request.Scheme;
-    return dict;
-});
 
 app.Run();

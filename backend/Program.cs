@@ -6,6 +6,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +20,21 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddIdentityApiEndpoints<ApplicationUser>()
     .AddRoles<Microsoft.AspNetCore.Identity.IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
+
+// We MUST tell ASP.NET Core to trust Render's load balancer that the request was HTTPS
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedFor;
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
+});
+
+// Configure Identity cookie to be SameSite=None
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Cookie.SameSite = SameSiteMode.None;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+});
 
 builder.Services.AddControllers();
 builder.Services.AddTransient<Microsoft.AspNetCore.Identity.IEmailSender<backend.Models.ApplicationUser>, backend.Services.EmailSender>();
@@ -37,42 +53,7 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// FORCE SAMESITE=NONE AND SECURE ON ALL COOKIES USING MIDDLEWARE
-app.Use(async (context, next) =>
-{
-    context.Response.OnStarting(() =>
-    {
-        var cookies = context.Response.Headers.SetCookie;
-        if (cookies.Count > 0)
-        {
-            var newCookies = new Microsoft.Extensions.Primitives.StringValues(
-                cookies.Select(cookie => 
-                {
-                    if (cookie != null)
-                    {
-                        var c = cookie.Replace(""samesite=lax"", """", StringComparison.OrdinalIgnoreCase)
-                                      .Replace(""samesite=strict"", """", StringComparison.OrdinalIgnoreCase);
-                        
-                        if (!c.Contains(""SameSite=None"", StringComparison.OrdinalIgnoreCase))
-                        {
-                            c += ""; SameSite=None"";
-                        }
-                        if (!c.Contains(""Secure"", StringComparison.OrdinalIgnoreCase))
-                        {
-                            c += ""; Secure"";
-                        }
-                        return c;
-                    }
-                    return cookie;
-                }).ToArray()
-            );
-            context.Response.Headers.SetCookie = newCookies;
-        }
-        return Task.CompletedTask;
-    });
-    
-    await next();
-});
+app.UseForwardedHeaders();
 
 using (var scope = app.Services.CreateScope())
 {

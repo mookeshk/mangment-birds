@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Bind to PORT provided by Render
 var port = Environment.GetEnvironmentVariable(""PORT"") ?? ""8080"";
 builder.WebHost.UseUrls($""http://*:{port}"");
 
@@ -18,6 +17,13 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddIdentityApiEndpoints<ApplicationUser>()
     .AddRoles<Microsoft.AspNetCore.Identity.IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
+
+// Fix Cross-Origin Cookies for Vercel/Render
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.None;
+    options.Cookie.SecurePolicy = Microsoft.AspNetCore.Http.CookieSecurePolicy.Always;
+});
 
 builder.Services.AddControllers();
 builder.Services.AddTransient<Microsoft.AspNetCore.Identity.IEmailSender<backend.Models.ApplicationUser>, backend.Services.EmailSender>();
@@ -36,7 +42,6 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// Automatically apply migrations and create DB on startup
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
@@ -45,13 +50,11 @@ using (var scope = app.Services.CreateScope())
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<Microsoft.AspNetCore.Identity.IdentityRole>>();
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
     
-    // Seed Admin Role
     if (!roleManager.RoleExistsAsync(""Admin"").GetAwaiter().GetResult())
     {
         roleManager.CreateAsync(new Microsoft.AspNetCore.Identity.IdentityRole(""Admin"")).GetAwaiter().GetResult();
     }
     
-    // Make specific user admin
     var adminEmail = ""eng.mo.keshk@gmail.com"";
     var adminUser = userManager.FindByEmailAsync(adminEmail).GetAwaiter().GetResult();
     if (adminUser != null)

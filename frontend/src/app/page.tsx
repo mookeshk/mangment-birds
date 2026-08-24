@@ -37,7 +37,7 @@ export default function LoginPage() {
         setErrorMsg("");
         
         try {
-            const res = await fetch('http://localhost:5089/login?useCookies=true', {
+            const res = await fetch('https://mangment-birds-api.onrender.com/login?useCookies=true', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

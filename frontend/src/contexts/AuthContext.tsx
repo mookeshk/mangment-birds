@@ -36,19 +36,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const fetchUser = async () => {
         try {
-            const res = await fetch("http://localhost:5089/manage/info", { credentials: "include" });
+            const res = await fetch("https://mangment-birds-api.onrender.com/manage/info", { credentials: "include" });
             if (res.ok) {
                 const data = await res.json();
                 
                 // Fetch additional farm settings
-                const farmRes = await fetch("http://localhost:5089/api/FarmSettings", { credentials: "include" });
+                const farmRes = await fetch("https://mangment-birds-api.onrender.com/api/FarmSettings", { credentials: "include" });
                 if (farmRes.ok) {
                     const farmData = await farmRes.json();
                     setUser({ 
                         email: data.email, 
                         farmName: farmData.farmName || "مزرعتي",
                         contactNumbers: farmData.contactNumbers,
-                        farmLogoUrl: farmData.farmLogoUrl ? `http://localhost:5089${farmData.farmLogoUrl}` : undefined,
+                        farmLogoUrl: farmData.farmLogoUrl ? `https://mangment-birds-api.onrender.com${farmData.farmLogoUrl}` : undefined,
                         subscriptionEndDate: farmData.subscriptionEndDate,
                         packageName: farmData.packageName,
                         isAdmin: farmData.isAdmin || data.email === "eng.mo.keshk@gmail.com"
@@ -73,14 +73,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const logout = async () => {
         try {
-            await fetch("http://localhost:5089/logout", { method: 'POST', credentials: 'include' });
+            await fetch("https://mangment-birds-api.onrender.com/logout", { method: 'POST', credentials: 'include' });
         } catch(e) {}
         setUser(null);
         router.push("/");
     };
 
     const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
-        const baseUrl = "http://localhost:5089";
+        const baseUrl = "https://mangment-birds-api.onrender.com";
         const finalUrl = url.startsWith("http") ? url : `${baseUrl}${url}`;
         
         const isFormData = options.body instanceof FormData;

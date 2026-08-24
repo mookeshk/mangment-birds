@@ -28,7 +28,7 @@ export default function NewBirdPage() {
     setError('');
 
     try {
-      const res = await fetch('http://localhost:5089/api/Birds', {
+      const res = await fetch('https://mangment-birds-api.onrender.com/api/Birds', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

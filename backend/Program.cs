@@ -6,6 +6,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,12 +21,8 @@ builder.Services.AddIdentityApiEndpoints<ApplicationUser>()
     .AddRoles<Microsoft.AspNetCore.Identity.IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
-// Bulletproof way to force SameSite=None and Secure on ALL cookies
-builder.Services.Configure<CookiePolicyOptions>(options =>
-{
-    options.MinimumSameSitePolicy = SameSiteMode.None;
-    options.Secure = CookieSecurePolicy.Always;
-});
+// Correct way to override Identity Cookie Options
+builder.Services.ConfigureOptions<ConfigureIdentityCookieOptions>();
 
 builder.Services.AddControllers();
 builder.Services.AddTransient<Microsoft.AspNetCore.Identity.IEmailSender<backend.Models.ApplicationUser>, backend.Services.EmailSender>();
@@ -80,10 +77,6 @@ if (!Directory.Exists(wwwrootPath))
 }
 
 app.UseStaticFiles();
-
-// Apply Cookie Policy before CORS/Auth
-app.UseCookiePolicy();
-
 app.UseCors();
 
 app.UseAuthentication();
@@ -92,3 +85,16 @@ app.MapControllers();
 app.MapIdentityApi<ApplicationUser>();
 
 app.Run();
+
+// We must override the specific named options for Identity
+public class ConfigureIdentityCookieOptions : Microsoft.Extensions.Options.IPostConfigureOptions<CookieAuthenticationOptions>
+{
+    public void PostConfigure(string? name, CookieAuthenticationOptions options)
+    {
+        if (name == IdentityConstants.ApplicationScheme)
+        {
+            options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.None;
+            options.Cookie.SecurePolicy = Microsoft.AspNetCore.Http.CookieSecurePolicy.Always;
+        }
+    }
+}

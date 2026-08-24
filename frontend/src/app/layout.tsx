@@ -1,5 +1,6 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Tajawal } from "next/font/google";
+import { Providers } from "./providers";
 import "./globals.css";
 
 const tajawal = Tajawal({
@@ -14,9 +15,22 @@ export const metadata: Metadata = {
   manifest: "/manifest.json",
 };
 
-export const viewport = {
+export const viewport: Viewport = {
   themeColor: "#2F855A",
 };
+
+const themeInitScript = `
+  (function() {
+    try {
+      var stored = localStorage.getItem('theme');
+      if (stored === 'dark' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    } catch (e) {}
+  })();
+`;
 
 export default function RootLayout({
   children,
@@ -24,11 +38,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ar" dir="rtl" className={tajawal.variable}>
+    <html lang="ar" dir="rtl" className={tajawal.variable} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
       <body>
-        <main className="container">
-          {children}
-        </main>
+        <Providers>
+          <main>
+            {children}
+          </main>
+        </Providers>
       </body>
     </html>
   );

@@ -163,8 +163,14 @@ namespace backend.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
+                    b.Property<int?>("ActivePackageId")
+                        .HasColumnType("int");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ContactNumbers")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
@@ -173,6 +179,9 @@ namespace backend.Migrations
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
+
+                    b.Property<string>("FarmLogoUrl")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FarmName")
                         .IsRequired()
@@ -204,6 +213,9 @@ namespace backend.Migrations
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime?>("SubscriptionEndDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
 
@@ -212,6 +224,8 @@ namespace backend.Migrations
                         .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ActivePackageId");
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
@@ -232,6 +246,9 @@ namespace backend.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("BreedId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("CageId")
                         .HasColumnType("int");
 
@@ -245,11 +262,17 @@ namespace backend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsMale")
+                    b.Property<bool?>("IsMale")
                         .HasColumnType("bit");
 
                     b.Property<int?>("MotherId")
                         .HasColumnType("int");
+
+                    b.Property<DateTime?>("PairingDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("PhotoUrl")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("PurchaseDate")
                         .HasColumnType("datetime2");
@@ -261,10 +284,10 @@ namespace backend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Status")
+                    b.Property<int?>("SpeciesId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Type")
+                    b.Property<int>("Status")
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")
@@ -273,15 +296,48 @@ namespace backend.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("BreedId");
+
                     b.HasIndex("CageId");
 
                     b.HasIndex("FatherId");
 
                     b.HasIndex("MotherId");
 
+                    b.HasIndex("SpeciesId");
+
                     b.HasIndex("UserId");
 
                     b.ToTable("Birds");
+                });
+
+            modelBuilder.Entity("backend.Models.Breed", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("SpeciesId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SpeciesId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Breeds");
                 });
 
             modelBuilder.Entity("backend.Models.BreedingSession", b =>
@@ -292,13 +348,16 @@ namespace backend.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("FemaleBirdId")
+                    b.Property<int?>("CageId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("FemaleBirdId")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
-                    b.Property<int>("MaleBirdId")
+                    b.Property<int?>("MaleBirdId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("MatingDate")
@@ -309,6 +368,8 @@ namespace backend.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CageId");
 
                     b.HasIndex("FemaleBirdId");
 
@@ -418,6 +479,211 @@ namespace backend.Migrations
                     b.ToTable("Eggs");
                 });
 
+            modelBuilder.Entity("backend.Models.ExpenseRecord", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Entity")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("ExpenseDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Notes")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ExpenseRecords");
+                });
+
+            modelBuilder.Entity("backend.Models.HealthRecord", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("DateGiven")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("InventoryItemId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("NextDueDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Notes")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("QuantityUsed")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("TargetBirdId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TargetCageId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TargetType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InventoryItemId");
+
+                    b.HasIndex("TargetBirdId");
+
+                    b.HasIndex("TargetCageId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("HealthRecords");
+                });
+
+            modelBuilder.Entity("backend.Models.InventoryCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("InventoryCategories");
+                });
+
+            modelBuilder.Entity("backend.Models.InventoryConsumption", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("DateConsumed")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("InventoryItemId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Notes")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Quantity")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InventoryItemId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("InventoryConsumptions");
+                });
+
+            modelBuilder.Entity("backend.Models.InventoryItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("CriticalLimit")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("ExpenseRecordId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("LastUpdated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("Quantity")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Unit")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<decimal>("WarningLimit")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("ExpenseRecordId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("InventoryItems");
+                });
+
             modelBuilder.Entity("backend.Models.SaleRecord", b =>
                 {
                     b.Property<int>("Id")
@@ -426,7 +692,7 @@ namespace backend.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("BirdId")
+                    b.Property<int?>("BirdId")
                         .HasColumnType("int");
 
                     b.Property<string>("BuyerName")
@@ -437,11 +703,23 @@ namespace backend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Notes")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("SaleDate")
                         .HasColumnType("datetime2");
 
                     b.Property<decimal>("SalePrice")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -454,6 +732,97 @@ namespace backend.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("SaleRecords");
+                });
+
+            modelBuilder.Entity("backend.Models.Species", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("IncubationPeriodInDays")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("MaturityAgeInDays")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Species");
+                });
+
+            modelBuilder.Entity("backend.Models.SubscriptionPackage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("DurationMonths")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Features")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SubscriptionPackages");
+                });
+
+            modelBuilder.Entity("backend.Models.SubscriptionRequest", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("PackageId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ReceiptUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("RequestDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PackageId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("SubscriptionRequests");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -507,8 +876,22 @@ namespace backend.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("backend.Models.ApplicationUser", b =>
+                {
+                    b.HasOne("backend.Models.SubscriptionPackage", "ActivePackage")
+                        .WithMany()
+                        .HasForeignKey("ActivePackageId");
+
+                    b.Navigation("ActivePackage");
+                });
+
             modelBuilder.Entity("backend.Models.Bird", b =>
                 {
+                    b.HasOne("backend.Models.Breed", "Breed")
+                        .WithMany()
+                        .HasForeignKey("BreedId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("backend.Models.Cage", "Cage")
                         .WithMany("Birds")
                         .HasForeignKey("CageId");
@@ -523,11 +906,18 @@ namespace backend.Migrations
                         .HasForeignKey("MotherId")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("backend.Models.Species", "Species")
+                        .WithMany()
+                        .HasForeignKey("SpeciesId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("backend.Models.ApplicationUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Breed");
 
                     b.Navigation("Cage");
 
@@ -535,20 +925,16 @@ namespace backend.Migrations
 
                     b.Navigation("Mother");
 
+                    b.Navigation("Species");
+
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("backend.Models.BreedingSession", b =>
+            modelBuilder.Entity("backend.Models.Breed", b =>
                 {
-                    b.HasOne("backend.Models.Bird", "FemaleBird")
-                        .WithMany()
-                        .HasForeignKey("FemaleBirdId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("backend.Models.Bird", "MaleBird")
-                        .WithMany()
-                        .HasForeignKey("MaleBirdId")
+                    b.HasOne("backend.Models.Species", "Species")
+                        .WithMany("Breeds")
+                        .HasForeignKey("SpeciesId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -557,6 +943,35 @@ namespace backend.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Species");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("backend.Models.BreedingSession", b =>
+                {
+                    b.HasOne("backend.Models.Cage", "Cage")
+                        .WithMany()
+                        .HasForeignKey("CageId");
+
+                    b.HasOne("backend.Models.Bird", "FemaleBird")
+                        .WithMany()
+                        .HasForeignKey("FemaleBirdId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("backend.Models.Bird", "MaleBird")
+                        .WithMany()
+                        .HasForeignKey("MaleBirdId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("backend.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Cage");
 
                     b.Navigation("FemaleBird");
 
@@ -621,13 +1036,106 @@ namespace backend.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("backend.Models.ExpenseRecord", b =>
+                {
+                    b.HasOne("backend.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("backend.Models.HealthRecord", b =>
+                {
+                    b.HasOne("backend.Models.InventoryItem", "InventoryItem")
+                        .WithMany()
+                        .HasForeignKey("InventoryItemId");
+
+                    b.HasOne("backend.Models.Bird", "TargetBird")
+                        .WithMany()
+                        .HasForeignKey("TargetBirdId");
+
+                    b.HasOne("backend.Models.Cage", "TargetCage")
+                        .WithMany()
+                        .HasForeignKey("TargetCageId");
+
+                    b.HasOne("backend.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("InventoryItem");
+
+                    b.Navigation("TargetBird");
+
+                    b.Navigation("TargetCage");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("backend.Models.InventoryCategory", b =>
+                {
+                    b.HasOne("backend.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("backend.Models.InventoryConsumption", b =>
+                {
+                    b.HasOne("backend.Models.InventoryItem", "InventoryItem")
+                        .WithMany()
+                        .HasForeignKey("InventoryItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("backend.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("InventoryItem");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("backend.Models.InventoryItem", b =>
+                {
+                    b.HasOne("backend.Models.InventoryCategory", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("backend.Models.ExpenseRecord", "ExpenseRecord")
+                        .WithMany()
+                        .HasForeignKey("ExpenseRecordId");
+
+                    b.HasOne("backend.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+
+                    b.Navigation("ExpenseRecord");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("backend.Models.SaleRecord", b =>
                 {
                     b.HasOne("backend.Models.Bird", "Bird")
                         .WithMany()
                         .HasForeignKey("BirdId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("backend.Models.ApplicationUser", "User")
                         .WithMany()
@@ -640,6 +1148,36 @@ namespace backend.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("backend.Models.Species", b =>
+                {
+                    b.HasOne("backend.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("backend.Models.SubscriptionRequest", b =>
+                {
+                    b.HasOne("backend.Models.SubscriptionPackage", "Package")
+                        .WithMany()
+                        .HasForeignKey("PackageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("backend.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Package");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("backend.Models.BreedingSession", b =>
                 {
                     b.Navigation("Eggs");
@@ -648,6 +1186,11 @@ namespace backend.Migrations
             modelBuilder.Entity("backend.Models.Cage", b =>
                 {
                     b.Navigation("Birds");
+                });
+
+            modelBuilder.Entity("backend.Models.Species", b =>
+                {
+                    b.Navigation("Breeds");
                 });
 #pragma warning restore 612, 618
         }

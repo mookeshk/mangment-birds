@@ -5,13 +5,17 @@ export default function ConfirmModal({
     title, 
     message, 
     onConfirm, 
-    onCancel 
+    onCancel,
+    confirmText = "تأكيد",
+    cancelText = "إلغاء"
 }: { 
     isOpen: boolean, 
     title: string, 
     message: string, 
-    onConfirm: () => void, 
-    onCancel: () => void 
+    onConfirm: () => void | Promise<void>, 
+    onCancel: () => void,
+    confirmText?: string,
+    cancelText?: string
 }) {
     if (!isOpen) return null;
 
@@ -32,13 +36,13 @@ export default function ConfirmModal({
                             onClick={onCancel}
                             className="px-4 py-2 rounded-xl text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-slate-700 dark:text-gray-300 dark:hover:bg-slate-600 transition-colors"
                         >
-                            إلغاء
+                            {cancelText}
                         </button>
                         <button 
                             onClick={onConfirm}
                             className="px-4 py-2 rounded-xl text-sm font-bold bg-red-500 text-white hover:bg-red-600 shadow-md shadow-red-500/20 transition-colors"
                         >
-                            نعم، احذف
+                            {confirmText}
                         </button>
                     </div>
                 </div>

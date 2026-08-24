@@ -118,6 +118,20 @@ export default function InventoryPage() {
 
     const [confirmState, setConfirmState] = useState<{ isOpen: boolean; title: string; message: string; action: () => Promise<void>; }>({ isOpen: false, title: '', message: '', action: async () => {} });
 
+    
+    const handleConsume = async (id: number, quantity: number, date: string, notes: string) => {
+        try {
+            await fetchWithAuth(`/api/inventory/${id}/consume`, {
+                method: 'POST',
+                body: JSON.stringify({ quantity, date, notes })
+            });
+            setIsConsumeModalOpen(false);
+            loadData();
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
     const loadData = async () => {
         try {
             const res = await fetchWithAuth('/api/inventory');
@@ -513,7 +527,7 @@ export default function InventoryPage() {
                 confirmText="حذف"
                 cancelText="إلغاء"
             />
-            <ConsumeModal isOpen={isConsumeModalOpen} onClose={() => setIsConsumeModalOpen(false)} item={itemToConsume} onSave={() => { setIsConsumeModalOpen(false); loadData(); }} />
+            <ConsumeModal isOpen={isConsumeModalOpen} onClose={() => setIsConsumeModalOpen(false)} item={itemToConsume} onSubmit={handleConsume} />
             
             <AIFarmAssistant />
         </div>

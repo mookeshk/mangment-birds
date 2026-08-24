@@ -1,10 +1,16 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using backend.Models;
+using System;
+using System.IO;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+// Bind to PORT provided by Render
+var port = Environment.GetEnvironmentVariable(""PORT"") ?? ""8080"";
+builder.WebHost.UseUrls($""http://*:{port}"");
+
+var connectionString = builder.Configuration.GetConnectionString(""DefaultConnection"");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(connectionString));
 
@@ -12,8 +18,6 @@ builder.Services.AddIdentityApiEndpoints<ApplicationUser>()
     .AddRoles<Microsoft.AspNetCore.Identity.IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddControllers();
 builder.Services.AddTransient<Microsoft.AspNetCore.Identity.IEmailSender<backend.Models.ApplicationUser>, backend.Services.EmailSender>();
 builder.Services.AddOpenApi();
@@ -31,22 +35,25 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Automatically apply migrations and create DB on startup
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    dbContext.Database.Migrate();
+}
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
 
-// app.UseHttpsRedirection();
-// Ensure wwwroot exists for static files
-var wwwrootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+var wwwrootPath = Path.Combine(Directory.GetCurrentDirectory(), ""wwwroot"");
 if (!Directory.Exists(wwwrootPath))
 {
     Directory.CreateDirectory(wwwrootPath);
 }
 
 app.UseStaticFiles();
-
 app.UseCors();
 
 app.UseAuthentication();
@@ -55,6 +62,3 @@ app.MapControllers();
 app.MapIdentityApi<ApplicationUser>();
 
 app.Run();
-
-
-

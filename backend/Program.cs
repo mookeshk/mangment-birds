@@ -7,10 +7,10 @@ using System.IO;
 var builder = WebApplication.CreateBuilder(args);
 
 // Bind to PORT provided by Render
-var port = Environment.GetEnvironmentVariable(""PORT"") ?? ""8080"";
-builder.WebHost.UseUrls($""http://*:{port}"");
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+builder.WebHost.UseUrls($"http://*:{port}");
 
-var connectionString = builder.Configuration.GetConnectionString(""DefaultConnection"");
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(connectionString));
 
@@ -47,7 +47,7 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-var wwwrootPath = Path.Combine(Directory.GetCurrentDirectory(), ""wwwroot"");
+var wwwrootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
 if (!Directory.Exists(wwwrootPath))
 {
     Directory.CreateDirectory(wwwrootPath);
@@ -62,3 +62,4 @@ app.MapControllers();
 app.MapIdentityApi<ApplicationUser>();
 
 app.Run();
+

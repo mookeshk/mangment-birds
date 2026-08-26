@@ -48,8 +48,8 @@ public class FarmSettingsController : ControllerBase
         });
     }
 
-    [HttpPost]
-    public async Task<IActionResult> UpdateFarmSettings([FromBody] FarmSettingsDto dto)
+    [HttpPut]
+    public async Task<IActionResult> UpdateFarmSettings([FromForm] FarmSettingsDto dto, IFormFile? logo)
     {
         var user = await _userManager.GetUserAsync(User);
         if (user == null) return Unauthorized();
@@ -57,9 +57,21 @@ public class FarmSettingsController : ControllerBase
         user.FarmName = dto.FarmName ?? user.FarmName;
         user.ContactNumbers = dto.ContactNumbers;
         
+        if (logo != null && logo.Length > 0)
+        {
+            var uploadsPath = Path.Combine(_env.ContentRootPath, "wwwroot", "uploads", "logos");
+            if (!Directory.Exists(uploadsPath)) Directory.CreateDirectory(uploadsPath);
+
+            var fileName = $"{user.Id}_{Guid.NewGuid()}{Path.GetExtension(logo.FileName)}";
+            var filePath = Path.Combine(uploadsPath, fileName);
+            using (var stream = new FileStream(filePath, FileMode.Create)) { await logo.CopyToAsync(stream); }
+
+            user.FarmLogoUrl = $"/uploads/logos/{fileName}";
+        }
+        
         await _userManager.UpdateAsync(user);
 
-        return Ok(new { message = "Updated" });
+        return Ok(new { message = "Updated", url = user.FarmLogoUrl });
     }
 
     [HttpPost("logo")]

@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/api-proxy/(.*)",
+      "destination": "https://mangment-birds-api.onrender.com/"
+    }
+  ]
+}

@@ -76,7 +76,7 @@ export default function RequestsPage() {
                                         <span className="text-sm font-medium text-gray-900 dark:text-gray-300">{req.packageName}</span>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
-                                        <a href={`/api-proxy${req.receiptUrl}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-sm font-bold text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300 hover:underline">
+                                        <a href={`https://mangment-birds-api.onrender.com${req.receiptUrl}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-sm font-bold text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300 hover:underline">
                                             <Icons.Camera className="w-4 h-4" /> عرض الإيصال
                                         </a>
                                     </td>

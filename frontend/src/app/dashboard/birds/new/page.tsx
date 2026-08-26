@@ -28,12 +28,12 @@ export default function NewBirdPage() {
     setError('');
 
     try {
-      const res = await fetch('/api-proxy/api/Birds', {
+      const res = await fetchWithAuth('/api/birds', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials: 'include',
+        
         body: JSON.stringify({
           ...formData,
           purchasePrice: formData.purchasePrice ? parseFloat(formData.purchasePrice) : 0
@@ -132,3 +132,4 @@ export default function NewBirdPage() {
     </div>
   );
 }
+

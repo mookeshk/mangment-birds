@@ -34,21 +34,58 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [isLoading, setIsLoading] = useState(true);
     const router = useRouter();
 
+    const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
+        const baseUrl = "https://mangment-birds-api.onrender.com";
+        const finalUrl = url.startsWith("http") ? url : \\\\;
+        
+        const isFormData = options.body instanceof FormData;
+        
+        const headers = new Headers(options.headers || {});
+        if (!isFormData && !headers.has("Content-Type")) {
+            headers.set("Content-Type", "application/json");
+        }
+
+        const token = localStorage.getItem('token');
+        if (token) {
+            headers.set("Authorization", \Bearer \\);
+        }
+
+        const res = await fetch(finalUrl, {
+            ...options,
+            headers,
+        });
+
+        if (res.status === 401) {
+            localStorage.removeItem('token');
+            setUser(null);
+            router.push("/");
+        }
+
+        return res;
+    };
+
     const fetchUser = async () => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            setUser(null);
+            setIsLoading(false);
+            return;
+        }
+
         try {
-            const res = await fetch("/api-proxy/manage/info", { credentials: "include" });
+            const res = await fetchWithAuth("/manage/info");
             if (res.ok) {
                 const data = await res.json();
                 
                 // Fetch additional farm settings
-                const farmRes = await fetch("/api-proxy/api/FarmSettings", { credentials: "include" });
+                const farmRes = await fetchWithAuth("/api/FarmSettings");
                 if (farmRes.ok) {
                     const farmData = await farmRes.json();
                     setUser({ 
                         email: data.email, 
                         farmName: farmData.farmName || "مزرعتي",
                         contactNumbers: farmData.contactNumbers,
-                        farmLogoUrl: farmData.farmLogoUrl ? `/api-proxy${farmData.farmLogoUrl}` : undefined,
+                        farmLogoUrl: farmData.farmLogoUrl ? \https://mangment-birds-api.onrender.com\\ : undefined,
                         subscriptionEndDate: farmData.subscriptionEndDate,
                         packageName: farmData.packageName,
                         isAdmin: farmData.isAdmin || data.email === "eng.mo.keshk@gmail.com"
@@ -57,6 +94,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     setUser({ email: data.email, farmName: "مزرعتي", isAdmin: data.email === "eng.mo.keshk@gmail.com" });
                 }
             } else {
+                localStorage.removeItem('token');
                 setUser(null);
             }
         } catch (err) {
@@ -72,36 +110,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }, []);
 
     const logout = async () => {
-        try {
-            await fetch("/api-proxy/logout", { method: 'POST', credentials: 'include' });
-        } catch(e) {}
+        localStorage.removeItem('token');
         setUser(null);
         router.push("/");
-    };
-
-    const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
-        const baseUrl = "/api-proxy";
-        const finalUrl = url.startsWith("http") ? url : `${baseUrl}${url}`;
-        
-        const isFormData = options.body instanceof FormData;
-        
-        const headers = new Headers(options.headers || {});
-        if (!isFormData && !headers.has("Content-Type")) {
-            headers.set("Content-Type", "application/json");
-        }
-
-        const res = await fetch(finalUrl, {
-            ...options,
-            credentials: "include",
-            headers,
-        });
-
-        if (res.status === 401) {
-            setUser(null);
-            router.push("/");
-        }
-
-        return res;
     };
 
     return (

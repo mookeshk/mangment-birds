@@ -46,19 +46,23 @@ export default function LoginPage() {
         setErrorMsg("");
         
         try {
-            const res = await fetch('/api-proxy/login?useCookies=true', {
+            const res = await fetch('https://mangment-birds-api.onrender.com/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                credentials: 'include',
                 body: JSON.stringify({ email, password }),
             });
 
             if (res.ok) {
-                // Refresh global user context BEFORE routing
-                await refreshUser();
-                router.push('/dashboard');
+                const data = await res.json();
+                if (data.accessToken) {
+                    localStorage.setItem('token', data.accessToken);
+                    await refreshUser();
+                    router.push('/dashboard');
+                } else {
+                    setErrorMsg("حدث خطأ غير متوقع أثناء تسجيل الدخول.");
+                }
             } else {
                 setErrorMsg("بيانات الدخول غير صحيحة، يرجى المحاولة مرة أخرى.");
             }

@@ -32,14 +32,14 @@ export default function SettingsPage() {
 
     const loadSpecies = async () => {
         try {
-            const res = await fetchWithAuth('/api/Birds/species');
+            const res = await fetchWithAuth('/api/Species');
             if (res.ok) setSpecies(await res.json());
         } catch (e) {}
     };
 
     const loadBreeds = async (speciesId: number) => {
         try {
-            const res = await fetchWithAuth(`/api/Birds/species/${speciesId}/breeds`);
+            const res = await fetchWithAuth(`/api/Species/${speciesId}/breeds`);
             if (res.ok) setBreeds(await res.json());
         } catch (e) {}
     };
@@ -52,9 +52,9 @@ export default function SettingsPage() {
     const handleAddSpecies = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            const res = await fetchWithAuth('/api/Birds/species', {
+            const res = await fetchWithAuth('/api/Species', {
                 method: 'POST',
-                body: JSON.stringify({ name: newSpeciesName })
+                body: JSON.stringify({ name: newSpeciesName, incubationPeriodInDays: Number(newSpeciesHatch) || 0, maturityAgeInDays: Number(newSpeciesMature) || 0 })
             });
             if (res.ok) {
                 setNewSpeciesName(""); setNewSpeciesHatch(""); setNewSpeciesMature("");
@@ -69,11 +69,11 @@ export default function SettingsPage() {
     const executeDelete = async () => {
         try {
             if (deleteModal.type === 'species') {
-                await fetchWithAuth(`/api/Birds/species/${deleteModal.targetId}`, { method: 'DELETE' });
+                await fetchWithAuth(`/api/Species/${deleteModal.targetId}`, { method: 'DELETE' });
                 if (selectedSpeciesId === deleteModal.targetId) { setSelectedSpeciesId(null); setBreeds([]); }
                 loadSpecies();
             } else if (deleteModal.type === 'breed') {
-                await fetchWithAuth(`/api/Birds/breeds/${deleteModal.targetId}`, { method: 'DELETE' });
+                await fetchWithAuth(`/api/Breeds/${deleteModal.targetId}`, { method: 'DELETE' });
                 if (selectedSpeciesId) loadBreeds(selectedSpeciesId);
             }
         } catch (e) {}
@@ -85,13 +85,13 @@ export default function SettingsPage() {
         if (!selectedSpeciesId) return;
         try {
             if (editBreedId) {
-                const res = await fetchWithAuth(`/api/Birds/breeds/${editBreedId}`, {
+                const res = await fetchWithAuth(`/api/Breeds/${editBreedId}`, {
                     method: 'PUT',
                     body: JSON.stringify({ id: editBreedId, speciesId: selectedSpeciesId, name: newBreedName })
                 });
                 if (res.ok) { resetBreedForm(); loadBreeds(selectedSpeciesId); }
             } else {
-                const res = await fetchWithAuth('/api/Birds/breeds', {
+                const res = await fetchWithAuth('/api/Breeds', {
                     method: 'POST',
                     body: JSON.stringify({ speciesId: selectedSpeciesId, name: newBreedName })
                 });

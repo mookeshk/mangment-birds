@@ -38,7 +38,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Now that we are hosting frontend on the backend, baseUrl can just be empty string!
         // Wait, for development it's useful to point to localhost or render.
         // Let's use empty string for production if we unify them, but for now we'll keep the absolute URL.
-        const baseUrl = "";
+        const baseUrl = "https://mangment-birds-api.onrender.com";
         const finalUrl = url.startsWith("http") ? url : `${baseUrl}${url}`;
         
         const isFormData = options.body instanceof FormData;
@@ -126,3 +126,4 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 }
 
 export const useAuth = () => useContext(AuthContext);
+

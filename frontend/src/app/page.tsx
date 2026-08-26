@@ -39,7 +39,7 @@ export default function LoginPage() {
         setErrorMsg("");
         
         try {
-            const res = await fetch('/login', {
+            const res = await fetch('https://mangment-birds-api.onrender.com/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -197,5 +197,6 @@ export default function LoginPage() {
         </div>
     );
 }
+
 
 

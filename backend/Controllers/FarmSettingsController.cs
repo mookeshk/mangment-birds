@@ -37,11 +37,17 @@ public class FarmSettingsController : ControllerBase
         
         var roles = await _userManager.GetRolesAsync(user);
 
+        var logoUrl = user.FarmLogoUrl;
+        if (!string.IsNullOrEmpty(logoUrl) && logoUrl.StartsWith("/"))
+        {
+            logoUrl = "https://mangment-birds-api.onrender.com" + logoUrl;
+        }
+        
         return Ok(new
         {
             user.FarmName,
             user.ContactNumbers,
-            user.FarmLogoUrl,
+            FarmLogoUrl = logoUrl,
             user.SubscriptionEndDate,
             PackageName = user.ActivePackage?.Name,
             IsAdmin = roles.Contains("Admin")
@@ -66,7 +72,7 @@ public class FarmSettingsController : ControllerBase
             var filePath = Path.Combine(uploadsPath, fileName);
             using (var stream = new FileStream(filePath, FileMode.Create)) { await logo.CopyToAsync(stream); }
 
-            user.FarmLogoUrl = $"/uploads/logos/{fileName}";
+            user.FarmLogoUrl = $"https://mangment-birds-api.onrender.com/uploads/logos/{fileName}";
         }
         
         await _userManager.UpdateAsync(user);
@@ -88,7 +94,7 @@ public class FarmSettingsController : ControllerBase
         var filePath = Path.Combine(uploadsPath, fileName);
         using (var stream = new FileStream(filePath, FileMode.Create)) { await file.CopyToAsync(stream); }
 
-        user.FarmLogoUrl = $"/uploads/logos/{fileName}";
+        user.FarmLogoUrl = $"https://mangment-birds-api.onrender.com/uploads/logos/{fileName}";
         await _userManager.UpdateAsync(user);
         return Ok(new { url = user.FarmLogoUrl });
     }

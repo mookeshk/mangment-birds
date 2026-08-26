@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import { useAuth } from '../../../../contexts/AuthContext';
 import QRCode from 'react-qr-code';
 
 interface Bird {
@@ -18,6 +19,7 @@ interface Bird {
 export default function BirdDetailsPage() {
   const params = useParams();
   const router = useRouter();
+    const { fetchWithAuth } = useAuth();
   const { id } = params;
   
   const [bird, setBird] = useState<Bird | null>(null);
@@ -30,7 +32,7 @@ export default function BirdDetailsPage() {
 
   const fetchBird = async () => {
     try {
-      const res = await fetch(`https://mangment-birds-api.onrender.com/api/Birds/${id}`, {
+      const res = await fetch(`/api/Birds/${id}`, {
         
       });
 

@@ -19,7 +19,7 @@ export default function ResetPassword() {
         setError('');
 
         try {
-            const res = await fetch('https://mangment-birds-api.onrender.com/resetPassword', {
+            const res = await fetch('/resetPassword', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, resetCode, newPassword })

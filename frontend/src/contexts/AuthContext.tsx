@@ -35,8 +35,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const router = useRouter();
 
     const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
-        const baseUrl = "https://mangment-birds-api.onrender.com";
-        const finalUrl = url.startsWith("http") ? url : \\\\;
+        // Now that we are hosting frontend on the backend, baseUrl can just be empty string!
+        // Wait, for development it's useful to point to localhost or render.
+        // Let's use empty string for production if we unify them, but for now we'll keep the absolute URL.
+        const baseUrl = "";
+        const finalUrl = url.startsWith("http") ? url : `${baseUrl}${url}`;
         
         const isFormData = options.body instanceof FormData;
         
@@ -47,7 +50,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         const token = localStorage.getItem('token');
         if (token) {
-            headers.set("Authorization", \Bearer \\);
+            headers.set("Authorization", `Bearer ${token}`);
         }
 
         const res = await fetch(finalUrl, {
@@ -85,7 +88,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                         email: data.email, 
                         farmName: farmData.farmName || "مزرعتي",
                         contactNumbers: farmData.contactNumbers,
-                        farmLogoUrl: farmData.farmLogoUrl ? \https://mangment-birds-api.onrender.com\\ : undefined,
+                        farmLogoUrl: farmData.farmLogoUrl ? `${farmData.farmLogoUrl}` : undefined,
                         subscriptionEndDate: farmData.subscriptionEndDate,
                         packageName: farmData.packageName,
                         isAdmin: farmData.isAdmin || data.email === "eng.mo.keshk@gmail.com"

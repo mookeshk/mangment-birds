@@ -19,13 +19,17 @@ export default function AdminLogin() {
         setIsLoading(true);
 
         try {
-            const res = await fetch("https://mangment-birds-api.onrender.com/login?useCookies=true", {
+            const res = await fetch("/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password }),
             });
 
             if (res.ok) {
+                const data = await res.json();
+                if (data.accessToken) {
+                    localStorage.setItem('token', data.accessToken);
+                }
                 await refreshUser(); // Make sure user context is updated and we get isAdmin
                 router.push("/admin");
             } else {
@@ -97,3 +101,4 @@ export default function AdminLogin() {
         </div>
     );
 }
+

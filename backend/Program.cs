@@ -102,4 +102,6 @@ app.UseAuthorization();
 app.MapControllers();
 app.MapIdentityApi<ApplicationUser>();
 
+app.MapFallbackToFile("index.html");
 app.Run();
+

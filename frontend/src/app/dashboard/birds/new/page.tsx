@@ -2,9 +2,11 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '../../../../contexts/AuthContext';
 
 export default function NewBirdPage() {
   const router = useRouter();
+    const { fetchWithAuth } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   

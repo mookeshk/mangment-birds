@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "../contexts/AuthContext";
 import Image from "next/image";
 import Link from "next/link";
-import { useAuth } from "../contexts/AuthContext";
 
 const Icons = {
     Sun: () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>,
@@ -33,20 +33,13 @@ export default function LoginPage() {
         }
     }, [isDark]);
 
-    // If user is already logged in, redirect to dashboard
-    useEffect(() => {
-        if (user) {
-            router.push('/dashboard');
-        }
-    }, [user, router]);
-
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
         setErrorMsg("");
         
         try {
-            const res = await fetch('https://mangment-birds-api.onrender.com/login', {
+            const res = await fetch('/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -58,11 +51,9 @@ export default function LoginPage() {
                 const data = await res.json();
                 if (data.accessToken) {
                     localStorage.setItem('token', data.accessToken);
-                    await refreshUser();
-                    router.push('/dashboard');
-                } else {
-                    setErrorMsg("حدث خطأ غير متوقع أثناء تسجيل الدخول.");
                 }
+                await refreshUser();
+                router.push('/dashboard');
             } else {
                 setErrorMsg("بيانات الدخول غير صحيحة، يرجى المحاولة مرة أخرى.");
             }
@@ -85,11 +76,9 @@ export default function LoginPage() {
                             مزرعتي <span className="text-emerald-500">.</span>
                         </span>
                     </div>
-                    
                     <button 
-                        onClick={() => setIsDark(!isDark)}
-                        className="p-2.5 rounded-xl bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                        aria-label="تبديل المظهر"
+                        onClick={() => setIsDark(!isDark)} 
+                        className="p-2.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
                     >
                         {isDark ? <Icons.Sun /> : <Icons.Moon />}
                     </button>
@@ -162,7 +151,7 @@ export default function LoginPage() {
 
                                 <button type="submit"
                                     disabled={isLoading}
-                                    className={w-full flex justify-center items-center py-3.5 px-4 rounded-2xl text-sm font-bold text-white bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 dark:focus:ring-offset-gray-900 shadow-lg shadow-emerald-500/30 transform transition-all duration-300 hover:-translate-y-0.5 }
+                                    className={`w-full flex justify-center items-center py-3.5 px-4 rounded-2xl text-sm font-bold text-white bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 dark:focus:ring-offset-gray-900 shadow-lg shadow-emerald-500/30 transform transition-all duration-300 hover:-translate-y-0.5 ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
                                 >
                                     {isLoading ? (
                                         <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -208,3 +197,5 @@ export default function LoginPage() {
         </div>
     );
 }
+
+

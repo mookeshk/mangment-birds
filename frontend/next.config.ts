@@ -13,6 +13,14 @@ const withPWA = withPWAInit({
 const nextConfig: NextConfig = {
   /* config options here */
   turbopack: {},
+  async rewrites() {
+    return [
+      {
+        source: '/api-proxy/:path*',
+        destination: 'https://mangment-birds-api.onrender.com/:path*',
+      },
+    ];
+  },
 };
 
 export default withPWA(nextConfig);

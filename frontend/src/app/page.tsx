@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { useAuth } from "./contexts/AuthContext";
+import { useAuth } from "../contexts/AuthContext";
 
 const Icons = {
     Sun: () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>,
@@ -46,7 +46,7 @@ export default function LoginPage() {
         setErrorMsg("");
         
         try {
-            const res = await fetch('https://mangment-birds-api.onrender.com/login?useCookies=true', {
+            const res = await fetch('/api-proxy/login?useCookies=true', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

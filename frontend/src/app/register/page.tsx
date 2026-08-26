@@ -38,7 +38,7 @@ export default function RegisterPage() {
         setErrorMsg("");
         
         try {
-            const res = await fetch('https://mangment-birds-api.onrender.com/register', {
+            const res = await fetch('/api-proxy/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -48,7 +48,7 @@ export default function RegisterPage() {
 
             if (res.ok) {
                 // Now login
-                const loginRes = await fetch('https://mangment-birds-api.onrender.com/login?useCookies=true', {
+                const loginRes = await fetch('/api-proxy/login?useCookies=true', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     credentials: 'include',

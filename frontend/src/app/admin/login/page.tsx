@@ -19,7 +19,7 @@ export default function AdminLogin() {
         setIsLoading(true);
 
         try {
-            const res = await fetch("https://mangment-birds-api.onrender.com/login?useCookies=true", {
+            const res = await fetch("/api-proxy/login?useCookies=true", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password }),

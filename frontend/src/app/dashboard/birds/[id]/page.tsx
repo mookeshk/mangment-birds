@@ -30,7 +30,7 @@ export default function BirdDetailsPage() {
 
   const fetchBird = async () => {
     try {
-      const res = await fetch(`https://mangment-birds-api.onrender.com/api/Birds/${id}`, {
+      const res = await fetch(`/api-proxy/api/Birds/${id}`, {
         credentials: 'include'
       });
 

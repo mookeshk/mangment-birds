@@ -79,7 +79,16 @@ app.UseForwardedHeaders();
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    dbContext.Database.Migrate();
+    
+    if (dbContext.Database.ProviderName == "Npgsql.EntityFrameworkCore.PostgreSQL")
+    {
+        dbContext.Database.Migrate();
+    }
+    else
+    {
+        // For SQLite, bypass migrations and just create the schema
+        dbContext.Database.EnsureCreated();
+    }
 
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<Microsoft.AspNetCore.Identity.IdentityRole>>();
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();

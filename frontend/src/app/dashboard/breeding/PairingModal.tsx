@@ -13,6 +13,7 @@ export default function PairingModal({ isOpen, onClose, onSave, birds, cages = [
     const [maleId, setMaleId] = useState("");
     const [femaleId, setFemaleId] = useState("");
     const [cageId, setCageId] = useState("");
+    const [colonyBirdIds, setColonyBirdIds] = useState<string[]>([]);
     const [matingDate, setMatingDate] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -24,6 +25,7 @@ export default function PairingModal({ isOpen, onClose, onSave, birds, cages = [
             setFemaleId("");
             setCageId("");
             setMatingDate(new Date().toISOString().split('T')[0]);
+            setColonyBirdIds([]);
         }
     }, [isOpen]);
 
@@ -42,6 +44,7 @@ export default function PairingModal({ isOpen, onClose, onSave, birds, cages = [
             await onSave({
                 maleBirdId: mode === "individual" ? parseInt(maleId) : null,
                 femaleBirdId: mode === "individual" ? parseInt(femaleId) : null,
+                colonyBirdIds: mode === "colony" ? colonyBirdIds.map(Number) : undefined,
                 cageId: cageId ? parseInt(cageId) : null,
                 matingDate: matingDate
             });
@@ -121,6 +124,30 @@ export default function PairingModal({ isOpen, onClose, onSave, birds, cages = [
                         </>
                     )}
 
+                    {mode === "colony" && (
+                        <div className="space-y-2 mb-4">
+                            <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">اختر طيور المطيار (متعدد)</label>
+                            <div className="max-h-40 overflow-y-auto bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl p-2 space-y-1">
+                                {availableBirds.length === 0 ? (
+                                    <div className="text-center text-xs text-gray-500 py-4">لا توجد طيور متاحة.</div>
+                                ) : availableBirds.map(b => (
+                                    <label key={b.id} className="flex items-center gap-3 p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg cursor-pointer">
+                                        <input 
+                                            type="checkbox" 
+                                            checked={colonyBirdIds.includes(b.id.toString())}
+                                            onChange={(e) => {
+                                                if (e.target.checked) setColonyBirdIds([...colonyBirdIds, b.id.toString()]);
+                                                else setColonyBirdIds(colonyBirdIds.filter(id => id !== b.id.toString()));
+                                            }}
+                                            className="w-4 h-4 text-emerald-500 bg-white border-gray-300 rounded focus:ring-emerald-500 dark:bg-slate-700 dark:border-slate-600"
+                                        />
+                                        <span className="text-sm text-gray-700 dark:text-gray-300">{b.identifier} ({b.speciesName}) - {b.isMale ? 'ذكر' : 'أنثى'}</span>
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                    
                     <div className="space-y-1">
                         <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
                             {mode === "colony" ? "القفص أو المطيار" : "القفص المتواجدين فيه (اختياري)"}
@@ -155,7 +182,7 @@ export default function PairingModal({ isOpen, onClose, onSave, birds, cages = [
                         <button type="submit" disabled={isSubmitting} className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white py-2.5 rounded-xl font-bold text-sm transition-all disabled:opacity-50">
                             {isSubmitting ? "جاري الحفظ..." : "تسجيل"}
                         </button>
-                        <button type="button" onClick={onClose} className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 dark:bg-slate-700 dark:hover:bg-slate-600 dark:text-gray-200 py-2.5 rounded-xl font-bold text-sm transition-all">
+                        <button type="button" onClick={onClose} className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 dark:bg-slate-700 dark:hover:bg-slate-600 dark:text-white dark:text-gray-200 py-2.5 rounded-xl font-bold text-sm transition-all">
                             إلغاء
                         </button>
                     </div>

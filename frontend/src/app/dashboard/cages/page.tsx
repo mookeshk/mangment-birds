@@ -192,7 +192,7 @@ export default function CagesPage() {
                                 <button type="submit" className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white py-2.5 rounded-xl font-bold text-sm">
                                     حفظ القفص
                                 </button>
-                                <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 dark:bg-slate-700 dark:hover:bg-slate-600 py-2.5 rounded-xl font-bold text-sm">
+                                <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 dark:bg-slate-700 dark:hover:bg-slate-600 dark:text-white py-2.5 rounded-xl font-bold text-sm">
                                     إلغاء
                                 </button>
                             </div>

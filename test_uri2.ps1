@@ -1,0 +1,1 @@
+[reflection.assembly]::LoadWithPartialName('System'); $uri = New-Object System.Uri('postgresql://postgres.lkifembpsutcnoipuogn:MoKeshk@161109@aws-1-eu-west-1.pooler.supabase.com:6543/postgres'); Write-Host 'UserInfo: ' $uri.UserInfo

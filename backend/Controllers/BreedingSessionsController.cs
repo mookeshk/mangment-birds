@@ -59,6 +59,7 @@ public class BreedingSessionsController : ControllerBase
         public int? FemaleBirdId { get; set; }
         public int? CageId { get; set; }
         public DateTime MatingDate { get; set; }
+        public List<int>? ColonyBirdIds { get; set; }
     }
 
     [HttpPost]
@@ -102,6 +103,17 @@ public class BreedingSessionsController : ControllerBase
             var cage = await _context.Cages.FirstOrDefaultAsync(c => c.Id == input.CageId && c.UserId == userId);
             if (cage == null) return BadRequest("القفص غير صالح.");
             session.CageId = input.CageId;
+            
+            if (input.ColonyBirdIds != null && input.ColonyBirdIds.Count > 0)
+            {
+                var colonyBirds = await _context.Birds.Where(b => input.ColonyBirdIds.Contains(b.Id) && b.UserId == userId).ToListAsync();
+                foreach (var b in colonyBirds)
+                {
+                    b.CageId = cage.Id;
+                    b.Status = BirdStatus.Paired;
+                    b.PairingDate = input.MatingDate;
+                }
+            }
         }
         else
         {

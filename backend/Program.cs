@@ -23,7 +23,9 @@ if (!string.IsNullOrEmpty(databaseUrl))
     // Parse Heroku/Render format postgres://user:pass@host:port/db
     var uri = new Uri(databaseUrl);
     var userInfo = uri.UserInfo.Split(':');
-    connectionString = $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Username={userInfo[0]};Password={userInfo[1]};SslMode=Require;TrustServerCertificate=True;";
+    var username = Uri.UnescapeDataString(userInfo[0]);
+    var password = Uri.UnescapeDataString(userInfo[1]);
+    connectionString = $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Username={username};Password={password};SslMode=Require;TrustServerCertificate=True;";
 }
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>

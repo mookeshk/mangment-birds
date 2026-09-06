@@ -114,7 +114,7 @@ export default function BirdModal({ isOpen, onClose, onAdded, birdToEdit }: { is
         const formData = new FormData();
         formData.append("file", file);
 
-        const res = await fetch('https://mangment-birds-api.onrender.com/api/birds/upload', {
+        const res = await fetchWithAuth('/api/Birds/upload', {
             method: 'POST',
             
             body: formData
@@ -292,5 +292,6 @@ export default function BirdModal({ isOpen, onClose, onAdded, birdToEdit }: { is
         </div>
     );
 }
+
 
 

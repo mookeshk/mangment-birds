@@ -39,7 +39,7 @@ export default function SettingsPage() {
 
     const loadBreeds = async (speciesId: number) => {
         try {
-            const res = await fetchWithAuth(`/api/Species/${speciesId}/breeds`);
+            const res = await fetchWithAuth(`/api/Breeds?speciesId=${speciesId}`);
             if (res.ok) setBreeds(await res.json());
         } catch (e) {}
     };

@@ -32,7 +32,7 @@ export default function PairingModal({ isOpen, onClose, onSave, birds, cages = [
     if (!isOpen) return null;
 
     // Only show birds that are Available (0) or Productive (1)
-    const availableBirds = birds.filter(b => b.status === 0 || b.status === 1);
+    const availableBirds = birds.filter(b => b.status === 0);
     
     const males = availableBirds.filter(b => b.isMale);
     const females = availableBirds.filter(b => !b.isMale);
@@ -188,7 +188,7 @@ export default function PairingModal({ isOpen, onClose, onSave, birds, cages = [
                         <button type="submit" disabled={isSubmitting} className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white py-2.5 rounded-xl font-bold text-sm transition-all disabled:opacity-50">
                             {isSubmitting ? "جاري الحفظ..." : "تسجيل"}
                         </button>
-                        <button type="button" onClick={onClose} className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 dark:bg-slate-700 dark:hover:bg-slate-600 dark:text-white dark:text-gray-200 py-2.5 rounded-xl font-bold text-sm transition-all">
+                        <button type="button" onClick={onClose} className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 dark:bg-slate-700 dark:hover:bg-slate-600 dark:text-white py-2.5 rounded-xl font-bold text-sm transition-all">
                             إلغاء
                         </button>
                     </div>
@@ -197,3 +197,4 @@ export default function PairingModal({ isOpen, onClose, onSave, birds, cages = [
         </div>
     );
 }
+

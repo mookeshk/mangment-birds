@@ -104,9 +104,12 @@ public class BreedingSessionsController : ControllerBase
             if (cage == null) return BadRequest("القفص غير صالح.");
             session.CageId = input.CageId;
             
+            if (input.ColonyBirdIds == null) return BadRequest("ColonyBirdIds is null");
+            if (input.ColonyBirdIds.Count == 0) return BadRequest("ColonyBirdIds is empty");
             if (input.ColonyBirdIds != null && input.ColonyBirdIds.Count > 0)
             {
                 var colonyBirds = await _context.Birds.Where(b => input.ColonyBirdIds.Contains(b.Id) && b.UserId == userId).ToListAsync();
+                if (colonyBirds.Count == 0) return BadRequest("No birds found matching the IDs");
                 foreach (var b in colonyBirds)
                 {
                     b.CageId = cage.Id;
@@ -170,6 +173,16 @@ public class BreedingSessionsController : ControllerBase
         if (session.FemaleBird != null) {
             session.FemaleBird.Status = BirdStatus.Available;
             session.FemaleBird.PairingDate = null;
+        }
+
+        // Restore colony birds if it's a colony session
+        if (session.CageId.HasValue && session.MaleBirdId == null && session.FemaleBirdId == null) {
+            var colonyBirds = await _context.Birds.Where(b => b.CageId == session.CageId && b.Status == BirdStatus.Paired && b.UserId == GetUserId()).ToListAsync();
+            foreach (var b in colonyBirds) {
+                b.Status = BirdStatus.Available;
+                b.PairingDate = null;
+                b.CageId = null;
+            }
         }
 
         _context.BreedingSessions.Remove(session);

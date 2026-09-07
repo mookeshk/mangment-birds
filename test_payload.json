@@ -1,0 +1,7 @@
+{
+  "maleBirdId": null,
+  "femaleBirdId": null,
+  "cageId": 1,
+  "matingDate": "2026-09-06",
+  "colonyBirdIds": [1, 2, 3, 4]
+}

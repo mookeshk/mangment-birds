@@ -39,6 +39,12 @@ export default function PairingModal({ isOpen, onClose, onSave, birds, cages = [
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        
+        if (mode === "colony" && colonyBirdIds.length === 0) {
+            alert("يجب اختيار طائر واحد على الأقل للتفريخ الجماعي.");
+            return;
+        }
+        
         setIsSubmitting(true);
         try {
             await onSave({

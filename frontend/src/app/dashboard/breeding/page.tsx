@@ -28,6 +28,7 @@ export default function BreedingPage() {
     const [cages, setCages] = useState<any[]>([]);
     
     const [isPairingModalOpen, setIsPairingModalOpen] = useState(false);
+    const [activeTab, setActiveTab] = useState<'active' | 'history'>('active');
     const [eggModalSession, setEggModalSession] = useState<any>(null);
     const [selectedPairId, setSelectedPairId] = useState<number | null>(null);
     const [activeEggTab, setActiveEggTab] = useState<number>(0); 
@@ -249,7 +250,12 @@ export default function BreedingPage() {
                                                     </div>
                                                     <div>
                                                         <p className="font-bold text-gray-900 dark:text-white text-base">
-                                                        {pair.maleIdentifier ? (
+                                                        {!pair.isActive && (
+                                            <div className="absolute top-2 right-2 text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-slate-700 px-2 py-1 rounded">
+                                                تاريخ الإنهاء: {new Date(pair.endDate).toLocaleDateString('ar-EG')}
+                                            </div>
+                                        )}
+                                        {pair.maleIdentifier ? (
                                             <>
                                                 {pair.maleIdentifier} <span className="text-gray-400 dark:text-slate-500 mx-1">×</span> {pair.femaleIdentifier}
                                             </>

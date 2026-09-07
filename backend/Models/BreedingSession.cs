@@ -16,6 +16,7 @@ public class BreedingSession
     
     public DateTime MatingDate { get; set; }
     public bool IsActive { get; set; } = true;
+    public DateTime? EndDate { get; set; }
     
     public ICollection<Egg> Eggs { get; set; } = new List<Egg>();
 }

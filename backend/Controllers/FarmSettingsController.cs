@@ -65,14 +65,15 @@ public class FarmSettingsController : ControllerBase
         
         if (logo != null && logo.Length > 0)
         {
-            var uploadsPath = Path.Combine(_env.ContentRootPath, "wwwroot", "uploads", "logos");
-            if (!Directory.Exists(uploadsPath)) Directory.CreateDirectory(uploadsPath);
-
-            var fileName = $"{user.Id}_{Guid.NewGuid()}{Path.GetExtension(logo.FileName)}";
-            var filePath = Path.Combine(uploadsPath, fileName);
-            using (var stream = new FileStream(filePath, FileMode.Create)) { await logo.CopyToAsync(stream); }
-
-            user.FarmLogoUrl = $"https://mangment-birds-api.onrender.com/uploads/logos/{fileName}";
+            using (var memoryStream = new MemoryStream())
+            {
+                await logo.CopyToAsync(memoryStream);
+                var imageBytes = memoryStream.ToArray();
+                var base64String = Convert.ToBase64String(imageBytes);
+                // Get MIME type from extension or contentType
+                var contentType = logo.ContentType;
+                user.FarmLogoUrl = $"data:{contentType};base64,{base64String}";
+            }
         }
         
         await _userManager.UpdateAsync(user);
@@ -87,14 +88,14 @@ public class FarmSettingsController : ControllerBase
         var user = await _userManager.GetUserAsync(User);
         if (user == null) return Unauthorized();
 
-        var uploadsPath = Path.Combine(_env.ContentRootPath, "wwwroot", "uploads", "logos");
-        if (!Directory.Exists(uploadsPath)) Directory.CreateDirectory(uploadsPath);
-
-        var fileName = $"{user.Id}_{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
-        var filePath = Path.Combine(uploadsPath, fileName);
-        using (var stream = new FileStream(filePath, FileMode.Create)) { await file.CopyToAsync(stream); }
-
-        user.FarmLogoUrl = $"https://mangment-birds-api.onrender.com/uploads/logos/{fileName}";
+        using (var memoryStream = new MemoryStream())
+        {
+            await file.CopyToAsync(memoryStream);
+            var imageBytes = memoryStream.ToArray();
+            var base64String = Convert.ToBase64String(imageBytes);
+            var contentType = file.ContentType;
+            user.FarmLogoUrl = $"data:{contentType};base64,{base64String}";
+        }
         await _userManager.UpdateAsync(user);
         return Ok(new { url = user.FarmLogoUrl });
     }

@@ -12,8 +12,8 @@ using backend.Models;
 namespace backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260826105631_InitialPostgresCreate")]
-    partial class InitialPostgresCreate
+    [Migration("20260907120941_InitialPostgresMigration")]
+    partial class InitialPostgresMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -351,6 +351,9 @@ namespace backend.Migrations
 
                     b.Property<int?>("CageId")
                         .HasColumnType("integer");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int?>("FemaleBirdId")
                         .HasColumnType("integer");

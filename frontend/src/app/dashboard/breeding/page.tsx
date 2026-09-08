@@ -120,6 +120,23 @@ export default function BreedingPage() {
         }
     };
 
+const handleEndSession = async (id: number) => {
+        if (!confirm('هل أنت متأكد من إنهاء هذه الدورة؟ (سيتم نقلها للسجل التاريخي وإعادة الطيور للحالة المتاحة)')) return;
+        
+        try {
+            const res = await fetchWithAuth(/api/breedingsessions//end, {
+                method: 'PUT'
+            });
+            if (res.ok) {
+                loadData();
+            } else {
+                alert('حدث خطأ أثناء إنهاء الدورة.');
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
     const handleUpdateEggStatus = (id: number, newStatus: number, session: any = null) => {
         if (newStatus === 1) {
             setHatchModalState({ isOpen: true, eggId: id, session: session });

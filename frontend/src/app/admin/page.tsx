@@ -148,6 +148,8 @@ export default function AdminUsersPage() {
                             <tr className="bg-gray-50 dark:bg-[#0f172a]/80 border-b border-gray-100 dark:border-[#334155]">
                                 <th className="px-6 py-4 text-sm font-bold text-gray-600 dark:text-gray-300 whitespace-nowrap">البريد الإلكتروني</th>
                                 <th className="px-6 py-4 text-sm font-bold text-gray-600 dark:text-gray-300 whitespace-nowrap">اسم المزرعة</th>
+                                  <th className="px-6 py-4 text-sm font-bold text-gray-600 dark:text-gray-300 whitespace-nowrap text-center">عدد الطيور</th>
+                                  <th className="px-6 py-4 text-sm font-bold text-gray-600 dark:text-gray-300 whitespace-nowrap text-center">الأقفاص / المطارات</th>
                                 <th className="px-6 py-4 text-sm font-bold text-gray-600 dark:text-gray-300 whitespace-nowrap text-center">الهاتف</th>
                                 <th className="px-6 py-4 text-sm font-bold text-gray-600 dark:text-gray-300 whitespace-nowrap text-center">الحالة</th>
                                 <th className="px-6 py-4 text-sm font-bold text-gray-600 dark:text-gray-300 whitespace-nowrap text-center">إجراءات</th>
@@ -163,8 +165,20 @@ export default function AdminUsersPage() {
                                             <span className="text-sm font-medium text-gray-900 dark:text-gray-300">{user.email}</span>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
-                                            <span className="text-sm font-bold text-gray-900 dark:text-white">{user.farmName || 'بدون اسم'}</span>
-                                        </td>
+                                              <span className="text-sm font-bold text-gray-900 dark:text-white">{user.farmName || 'بدون اسم'}</span>
+                                          </td>
+                                          <td className="px-6 py-4 whitespace-nowrap text-center">
+                                              <span className="inline-flex items-center justify-center bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 px-2.5 py-0.5 rounded-full text-xs font-medium">
+                                                {user.birdsCount || 0} طائر
+                                              </span>
+                                          </td>
+                                          <td className="px-6 py-4 whitespace-nowrap text-center">
+                                              <div className="flex items-center justify-center gap-2">
+                                                  <span className="text-xs text-gray-500 dark:text-gray-400" title="عدد الأقفاص">أقفاص: {user.cagesCount || 0}</span>
+                                                  <span className="text-gray-300 dark:text-gray-600">|</span>
+                                                  <span className="text-xs text-gray-500 dark:text-gray-400" title="عدد المطارات">مطارات: {user.coloniesCount || 0}</span>
+                                              </div>
+                                          </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-600 dark:text-gray-400 font-mono">
                                             {user.contactNumbers || 'لا يوجد'}
                                         </td>

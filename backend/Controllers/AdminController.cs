@@ -45,7 +45,10 @@ public class AdminController : ControllerBase
             u.FarmName,
             ContactNumbers = u.ContactNumbers ?? u.PhoneNumber,
             IsLockedOut = u.LockoutEnd != null && u.LockoutEnd > DateTimeOffset.UtcNow,
-            LockoutEnd = u.LockoutEnd
+            LockoutEnd = u.LockoutEnd,
+            BirdsCount = _context.Birds.Count(b => b.UserId == u.Id),
+            CagesCount = _context.Cages.Count(c => c.UserId == u.Id && c.Capacity <= 2),
+            ColoniesCount = _context.Cages.Count(c => c.UserId == u.Id && c.Capacity > 2)
         }).ToListAsync();
 
         return Ok(users);

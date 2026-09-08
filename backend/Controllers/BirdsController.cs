@@ -19,6 +19,8 @@ public class CreateBirdDto
     public DateTime? HatchDate { get; set; }
     public string? PhotoUrl { get; set; }
     public DateTime? PairingDate { get; set; }
+    public int? FatherId { get; set; }
+    public int? MotherId { get; set; }
 }
 
 [Authorize]
@@ -113,6 +115,8 @@ public class BirdsController : ControllerBase
             HatchDate = input.HatchDate,
             PhotoUrl = input.PhotoUrl,
             PairingDate = input.PairingDate,
+            FatherId = input.FatherId,
+            MotherId = input.MotherId,
             UserId = userId
         };
 
@@ -140,6 +144,8 @@ public class BirdsController : ControllerBase
         bird.HatchDate = input.HatchDate;
         bird.PhotoUrl = input.PhotoUrl;
         bird.PairingDate = input.PairingDate;
+        bird.FatherId = input.FatherId;
+        bird.MotherId = input.MotherId;
 
         if (input.Status == BirdStatus.Sold && bird.Status != BirdStatus.Sold && input.SalePrice.HasValue)
         {

@@ -32,7 +32,7 @@ export default function PairingModal({ isOpen, onClose, onSave, birds, cages = [
     if (!isOpen) return null;
 
     // Only show birds that are Available (0) or Productive (1)
-    const availableBirds = birds.filter(b => b.status === 0);
+    const availableBirds = birds.filter(b => b.status === 0 || b.status === 1);
     
     const males = availableBirds.filter(b => b.isMale);
     const females = availableBirds.filter(b => !b.isMale);
@@ -197,4 +197,5 @@ export default function PairingModal({ isOpen, onClose, onSave, birds, cages = [
         </div>
     );
 }
+
 

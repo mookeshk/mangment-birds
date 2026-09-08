@@ -467,6 +467,7 @@ export default function BreedingPage() {
             />
 
             <HatchModal 
+                birds={birds}
                 isOpen={hatchModalState.isOpen}
                 eggId={hatchModalState.eggId}
                 session={hatchModalState.session}
@@ -487,6 +488,7 @@ export default function BreedingPage() {
         </div>
     );
 }
+
 
 
 

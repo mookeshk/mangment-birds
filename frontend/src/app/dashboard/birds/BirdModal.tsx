@@ -283,7 +283,55 @@ export default function BirdModal({ isOpen, onClose, onAdded, birdToEdit }: { is
                         )}
                     </div>
 
-                    <div className="pt-4 flex justify-end gap-3 border-t border-gray-100 dark:border-slate-700">
+                    
+                        {birdToEdit && (
+                            <div className="col-span-2 mt-4 p-4 bg-blue-50 dark:bg-slate-800/50 rounded-xl border border-blue-100 dark:border-slate-700">
+                                <h3 className="text-md font-bold text-blue-800 dark:text-blue-400 mb-4 flex items-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" /></svg>
+                                    شجرة العائلة (السلالة)
+                                </h3>
+                                
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 border-b pb-1 border-gray-200 dark:border-slate-600">الأصول (الآباء)</h4>
+                                        <div className="space-y-2 text-sm">
+                                            <div className="flex justify-between items-center bg-white dark:bg-slate-900 p-2 rounded border border-gray-100 dark:border-slate-700">
+                                                <span className="text-gray-500 dark:text-gray-400">الأب:</span>
+                                                <span className="font-medium text-gray-900 dark:text-white">
+                                                    {birds.find((b: any) => b.id === birdToEdit.fatherId)?.identifier || 'غير معروف'}
+                                                </span>
+                                            </div>
+                                            <div className="flex justify-between items-center bg-white dark:bg-slate-900 p-2 rounded border border-gray-100 dark:border-slate-700">
+                                                <span className="text-gray-500 dark:text-gray-400">الأم:</span>
+                                                <span className="font-medium text-gray-900 dark:text-white">
+                                                    {birds.find((b: any) => b.id === birdToEdit.motherId)?.identifier || 'غير معروف'}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div>
+                                        <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 border-b pb-1 border-gray-200 dark:border-slate-600">الفروع (الأبناء)</h4>
+                                        <div className="space-y-2 text-sm max-h-32 overflow-y-auto pr-1 custom-scrollbar">
+                                            {birds.filter((b: any) => b.fatherId === birdToEdit.id || b.motherId === birdToEdit.id).length > 0 ? (
+                                                birds.filter((b: any) => b.fatherId === birdToEdit.id || b.motherId === birdToEdit.id).map((child: any) => (
+                                                    <div key={child.id} className="flex justify-between items-center bg-white dark:bg-slate-900 p-2 rounded border border-gray-100 dark:border-slate-700">
+                                                        <span className="font-medium text-gray-900 dark:text-white">{child.identifier}</span>
+                                                        <span className="text-xs px-2 py-1 bg-gray-100 dark:bg-slate-800 rounded-full text-gray-600 dark:text-gray-400">
+                                                            {child.isMale === true ? 'ذكر' : child.isMale === false ? 'أنثى' : 'غير محدد'}
+                                                        </span>
+                                                    </div>
+                                                ))
+                                            ) : (
+                                                <div className="text-center py-2 text-gray-400 dark:text-gray-500 italic">لا يوجد أبناء مسجلين</div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                      <div className="pt-4 flex justify-end gap-3 border-t border-gray-100 dark:border-slate-700">
                         <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg dark:text-gray-300 dark:hover:bg-slate-700">إلغاء</button>
                         <button type="submit" className="px-4 py-2 text-sm bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 shadow-md shadow-emerald-500/20">{birdToEdit ? "حفظ التعديلات" : "إضافة الطائر"}</button>
                     </div>

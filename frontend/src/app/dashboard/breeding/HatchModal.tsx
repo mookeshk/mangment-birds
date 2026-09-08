@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import { useAuth } from "../../../contexts/AuthContext";
 
-export default function HatchModal({ isOpen, onClose, eggId, session, onSuccess }: any) {
+export default function HatchModal({ isOpen, onClose, eggId, session, onSuccess, birds = [] }: any) {
     const { fetchWithAuth } = useAuth();
     const [identifier, setIdentifier] = useState('');
     const [isMale, setIsMale] = useState<boolean | null>(null);
     const [loading, setLoading] = useState(false);
+    const [selectedFatherId, setSelectedFatherId] = useState('');
+    const [selectedMotherId, setSelectedMotherId] = useState('');
+
 
     if (!isOpen) return null;
 
@@ -13,6 +16,7 @@ export default function HatchModal({ isOpen, onClose, eggId, session, onSuccess 
         e.preventDefault();
         setLoading(true);
 
+        const isColony = session?.maleBirdId == null;
         const payload = {
             identifier,
             isMale,
@@ -20,8 +24,8 @@ export default function HatchModal({ isOpen, onClose, eggId, session, onSuccess 
             cageId: session?.cageId,
             speciesId: session?.speciesId,
             breedId: null, // As requested, leave breed unknown
-            fatherId: session?.maleBirdId,
-            motherId: session?.femaleBirdId
+            fatherId: isColony ? (selectedFatherId ? Number(selectedFatherId) : null) : session?.maleBirdId,
+            motherId: isColony ? (selectedMotherId ? Number(selectedMotherId) : null) : session?.femaleBirdId
         };
 
         try {
@@ -61,6 +65,32 @@ export default function HatchModal({ isOpen, onClose, eggId, session, onSuccess 
                     </p>
 
                     <div className="space-y-4">
+                        {session?.maleBirdId == null && (
+                            <div className="p-4 bg-emerald-50 dark:bg-slate-700/50 rounded-xl mb-4 border border-emerald-100 dark:border-slate-600">
+                                <h4 className="text-sm font-bold text-emerald-800 dark:text-emerald-400 mb-3">تحديد الأبوين (تفريخ جماعي)</h4>
+                                <div className="space-y-3">
+                                    <div>
+                                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">الذكر (الأب)</label>
+                                        <select value={selectedFatherId} onChange={e => setSelectedFatherId(e.target.value)} className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg text-sm dark:text-white">
+                                            <option value="">غير معروف</option>
+                                            {birds.filter((b: any) => b.isMale && b.cageId === session?.cageId).map((b: any) => (
+                                                <option key={b.id} value={b.id}>{b.identifier} - {b.species?.name}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">الأنثى (الأم)</label>
+                                        <select value={selectedMotherId} onChange={e => setSelectedMotherId(e.target.value)} className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg text-sm dark:text-white">
+                                            <option value="">غير معروف</option>
+                                            {birds.filter((b: any) => b.isMale === false && b.cageId === session?.cageId).map((b: any) => (
+                                                <option key={b.id} value={b.id}>{b.identifier} - {b.species?.name}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
                         <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                 رقم الحجل / المعرف <span className="text-red-500">*</span>

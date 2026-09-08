@@ -43,7 +43,7 @@ public class AdminController : ControllerBase
             u.Id,
             u.Email,
             u.FarmName,
-            PhoneNumber = u.ContactNumbers ?? u.PhoneNumber,
+            ContactNumbers = u.ContactNumbers ?? u.PhoneNumber,
             IsLockedOut = u.LockoutEnd != null && u.LockoutEnd > DateTimeOffset.UtcNow,
             LockoutEnd = u.LockoutEnd
         }).ToListAsync();
@@ -69,3 +69,4 @@ public class AdminController : ControllerBase
         return Ok();
     }
 }
+

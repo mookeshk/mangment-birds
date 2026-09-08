@@ -34,6 +34,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     if (connectionString != null && (connectionString.Contains("Host=") || connectionString.Contains("Server=")))
     {
         options.UseNpgsql(connectionString);
+        options.ConfigureWarnings(w => w.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
     }
     else
     {
@@ -135,5 +136,6 @@ app.MapIdentityApi<ApplicationUser>();
 
 app.MapFallbackToFile("index.html");
 app.Run();
+
 
 

@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useAuth } from "../../../contexts/AuthContext";
 
-export default function BirdModal({ isOpen, onClose, onAdded, birdToEdit }: { isOpen: boolean, onClose: () => void, onAdded: () => void, birdToEdit?: any }) {
+export default function BirdModal({ isOpen, onClose, onAdded, birdToEdit, birds = [] }: { isOpen: boolean, onClose: () => void, onAdded: () => void, birdToEdit?: any, birds?: any[] }) {
     const { fetchWithAuth } = useAuth();
     const [species, setSpecies] = useState<any[]>([]);
     const [breeds, setBreeds] = useState<any[]>([]);
@@ -340,6 +340,7 @@ export default function BirdModal({ isOpen, onClose, onAdded, birdToEdit }: { is
         </div>
     );
 }
+
 
 
 

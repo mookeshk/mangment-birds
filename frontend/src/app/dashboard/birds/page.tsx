@@ -265,6 +265,7 @@ export default function BirdsPage() {
             </div>
             
             <BirdModal 
+                birds={birds}
                 isOpen={isAddModalOpen} 
                 onClose={closeAndClearModal} 
                 onAdded={() => loadBirds()} 
@@ -281,4 +282,5 @@ export default function BirdsPage() {
         </div>
     );
 }
+
 

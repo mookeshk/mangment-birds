@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { useAuth } from '../../../../contexts/AuthContext';
-import { Icons } from '../../../../components/Icons';
+import { useAuth } from '../../../contexts/AuthContext';
+import { Icons } from '../../../components/Icons';
 
 export default function AdminPackages() {
     const { fetchWithAuth, user } = useAuth();

@@ -112,7 +112,6 @@ export default function AdminPackages() {
         }
     };
 
-    if (user?.role !== 'Admin') return <div className="p-8 text-center text-red-500">غير مصرح لك بالدخول</div>;
 
     return (
         <div className="max-w-7xl mx-auto space-y-8" dir="rtl">

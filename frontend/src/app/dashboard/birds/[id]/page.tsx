@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { useAuth } from '../../../../contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
 import QRCode from 'react-qr-code';
 

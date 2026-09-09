@@ -11,13 +11,11 @@ const withPWA = withPWAInit({
 });
 
 const nextConfig: NextConfig = {
+  /* config options here */
+  turbopack: {},
   typescript: {
     ignoreBuildErrors: true,
   },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  turbopack: {},
 };
 
 export default withPWA(nextConfig);

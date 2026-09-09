@@ -124,7 +124,7 @@ const handleEndSession = async (id: number) => {
         if (!confirm('هل أنت متأكد من إنهاء هذه الدورة؟ (سيتم نقلها للسجل التاريخي وإعادة الطيور للحالة المتاحة)')) return;
         
         try {
-            const res = await fetchWithAuth(/api/breedingsessions//end, {
+            const res = await fetchWithAuth(`/api/breedingsessions/${id}/end`, {
                 method: 'PUT'
             });
             if (res.ok) {

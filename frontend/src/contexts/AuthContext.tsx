@@ -11,6 +11,7 @@ export interface User {
     subscriptionEndDate?: string;
     packageName?: string;
     isAdmin?: boolean;
+    role?: string;
 }
 
 interface AuthContextType {

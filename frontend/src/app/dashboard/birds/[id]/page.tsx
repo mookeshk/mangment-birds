@@ -4,7 +4,9 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
-import QRCode from 'react-qr-code';
+import dynamicImport from 'next/dynamic';
+
+const QRCode = dynamicImport(() => import('react-qr-code'), { ssr: false });
 
 export default function BirdProfilePage() {
   const params = useParams();

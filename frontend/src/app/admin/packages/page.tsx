@@ -5,9 +5,15 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Icons } from '@/components/Icons';
 
 export default function AdminPackages() {
-    const { fetchWithAuth, user } = useAuth();
+    const { fetchWithAuth } = useAuth();
     const [packages, setPackages] = useState<any[]>([]);
-    
+    const [toast, setToast] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
+
+    const showToast = (text: string, type: 'success' | 'error' = 'success') => {
+        setToast({ text, type });
+        setTimeout(() => setToast(null), 3500);
+    };
+
     // Add State
     const [newPackageName, setNewPackageName] = useState('');
     const [newPackagePrice, setNewPackagePrice] = useState('');
@@ -50,15 +56,18 @@ export default function AdminPackages() {
                 })
             });
             if (res.ok) {
-                alert('تم إضافة الباقة بنجاح');
+                showToast('تم إضافة الباقة بنجاح', 'success');
                 setNewPackageName('');
                 setNewPackagePrice('');
                 setNewPackageDuration('');
                 setNewPackageFeatures('');
                 fetchPackages();
+            } else {
+                showToast('حدث خطأ أثناء إضافة الباقة', 'error');
             }
         } catch (err) {
             console.error(err);
+            showToast('حدث خطأ في الاتصال', 'error');
         }
     };
 
@@ -69,11 +78,14 @@ export default function AdminPackages() {
                 method: 'DELETE'
             });
             if (res.ok) {
-                alert('تم حذف الباقة');
+                showToast('تم حذف الباقة بنجاح', 'success');
                 fetchPackages();
+            } else {
+                showToast('حدث خطأ أثناء حذف الباقة', 'error');
             }
         } catch (err) {
             console.error(err);
+            showToast('حدث خطأ في الاتصال', 'error');
         }
     };
 
@@ -103,18 +115,37 @@ export default function AdminPackages() {
                 })
             });
             if (res.ok) {
-                alert('تم تحديث الباقة بنجاح');
+                showToast('تم تحديث الباقة بنجاح', 'success');
                 setEditId(null);
                 fetchPackages();
+            } else {
+                showToast('حدث خطأ أثناء تحديث الباقة', 'error');
             }
         } catch (err) {
             console.error(err);
+            showToast('حدث خطأ في الاتصال', 'error');
         }
     };
 
-
     return (
-        <div className="max-w-7xl mx-auto space-y-8" dir="rtl">
+        <div className="max-w-7xl mx-auto space-y-8 relative pb-12" dir="rtl">
+            
+            {/* Custom In-App Toast Notification */}
+            {toast && (
+                <div className={`fixed top-6 left-1/2 -translate-x-1/2 z-50 px-6 py-3.5 rounded-2xl shadow-2xl font-bold flex items-center gap-3 transition-all animate-bounce ${
+                    toast.type === 'success' ? 'bg-emerald-600 text-white' : 'bg-red-600 text-white'
+                }`}>
+                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        {toast.type === 'success' ? (
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        ) : (
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        )}
+                    </svg>
+                    <span>{toast.text}</span>
+                </div>
+            )}
+
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-[#1e293b] p-6 border border-gray-100 dark:border-gray-800 rounded-2xl shadow-sm">
                 <div>
                     <h1 className="text-3xl font-black text-gray-900 dark:text-white flex items-center gap-3">

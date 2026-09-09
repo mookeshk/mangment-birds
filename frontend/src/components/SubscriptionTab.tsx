@@ -22,31 +22,16 @@ export default function SubscriptionTab() {
     const loadSubscriptionData = async () => {
         setIsLoading(true);
         try {
-            const reqRes = await fetchWithAuth('/api/user/subscription/request');
-            if (reqRes.ok) {
-                const req = await reqRes.json();
-                if (req) {
-                    setActiveRequest(req);
-                    setStatus(req.status === 'Pending' ? 'Pending' : 'Active');
-                    setIsLoading(false);
-                    return;
-                }
+            const pkgRes = await fetchWithAuth('/api/subscriptions/packages');
+            if (pkgRes.ok) {
+                const data = await pkgRes.json();
+                setPackages(data);
             }
-
-            const activeRes = await fetchWithAuth('/api/user/subscription/active');
-            if (activeRes.ok) {
-                const active = await activeRes.json();
-                if (active) {
-                    setStatus('Active');
-                    setIsLoading(false);
-                    return;
-                }
-            }
-
-            const pkgRes = await fetchWithAuth('/api/user/subscription/packages');
-            if (pkgRes.ok) setPackages(await pkgRes.json());
-        } catch (e) {}
-        setIsLoading(false);
+        } catch (e) {
+            console.error(e);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const handleSubscribe = async (e: React.FormEvent) => {
@@ -58,7 +43,7 @@ export default function SubscriptionTab() {
         formData.append('receipt', receiptFile);
 
         try {
-            const res = await fetchWithAuth('/api/user/subscription/subscribe', {
+            const res = await fetchWithAuth('/api/subscriptions/request', {
                 method: 'POST',
                 body: formData
             });
